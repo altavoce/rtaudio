@@ -10243,7 +10243,7 @@ void RtApi :: error( RtAudioError::Type type, RtAudioError::Type specificErrorTy
       stream_.callbackInfo.isRunning = false; // exit from the thread
       abortStream();
     }
-    errorCallback( specificErrorTypeForCallBack, errorMessage );
+    errorCallback( specificErrorTypeForCallBack, errorMessage, stream_.callbackInfo.userData );
     firstErrorOccurred_ = false;
     return;
   }
