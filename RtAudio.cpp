@@ -7181,19 +7181,20 @@ unsigned int RtApiAlsa :: getDeviceCount( void )
   char name[64];
   snd_ctl_t *handle = 0;
 
-  strcpy(name, "default");
-  result = snd_ctl_open( &handle, "default", 0 );
-  if (result == 0) {
-    nDevices++;
-    snd_ctl_close( handle );
-  }
+  // strcpy(name, "default");
+  // result = snd_ctl_open( &handle, "default", 0 );
+  // if (result == 0) {
+  //   nDevices++;
+  //   snd_ctl_close( handle );
+  // }
 
   // Count cards and devices
   card = -1;
   snd_card_next( &card );
   while ( card >= 0 ) {
     sprintf( name, "hw:%d", card );
-    result = snd_ctl_open( &handle, name, 0 );
+    // result = snd_ctl_open( &handle, name, 0 );
+    result = snd_ctl_open( &handle, name, SND_CTL_NONBLOCK );
     if ( result < 0 ) {
       handle = 0;
       errorStream_ << "RtApiAlsa::getDeviceCount: control open, card = " << card << ", " << snd_strerror( result ) << ".";
@@ -7233,13 +7234,13 @@ RtAudio::DeviceInfo RtApiAlsa :: getDeviceInfo( unsigned int device )
   char name[64];
   snd_ctl_t *chandle = 0;
 
-  result = snd_ctl_open( &chandle, "default", SND_CTL_NONBLOCK );
-  if ( result == 0 ) {
-    if ( nDevices++ == device ) {
-      strcpy( name, "default" );
-      goto foundDevice;
-    }
-  }
+  // result = snd_ctl_open( &chandle, "default", SND_CTL_NONBLOCK );
+  // if ( result == 0 ) {
+  //   if ( nDevices++ == device ) {
+  //     strcpy( name, "default" );
+  //     goto foundDevice;
+  //   }
+  // }
 
   // Count cards and devices
   snd_card_next( &card );
@@ -7543,23 +7544,26 @@ bool RtApiAlsa :: probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
   char name[64];
   snd_ctl_t *chandle;
 
-  if ( device == 0
-       || (options && options->flags & RTAUDIO_ALSA_USE_DEFAULT) )
-  {
-    strcpy(name, "default");
-    result = snd_ctl_open( &chandle, "default", SND_CTL_NONBLOCK );
-    if ( result == 0 ) {
-      if ( nDevices == device ) {
-        strcpy( name, "default" );
-        snd_ctl_close( chandle );
-        goto foundDevice;
-      }
-      nDevices++;
-    }
+  // if ( device == 0
+  //      || (options && options->flags & RTAUDIO_ALSA_USE_DEFAULT) )
+  // {
+  //   strcpy(name, "default");
+  //   result = snd_ctl_open( &chandle, "default", SND_CTL_NONBLOCK );
+  //   if ( result == 0 ) {
+  //     if ( nDevices == device ) {
+  //       strcpy( name, "default" );
+  //       snd_ctl_close( chandle );
+  //       goto foundDevice;
+  //     }
+  //     nDevices++;
+  //   }
+  // }
+
+  if(0){
   }
 
   else {
-    nDevices++;
+    // nDevices++;
     // Count cards and devices
     card = -1;
     snd_card_next( &card );
