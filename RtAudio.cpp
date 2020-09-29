@@ -5514,7 +5514,7 @@ Exit:
   if ( !errorText.empty() )
   {
     errorText_ = errorText;
-    std::cout << errorText_ << " " << specificErrorType << std::endl;
+    std::cout << "RtApiWasapi::wasapiThread(): ERROR: " << errorText_ << " " << specificErrorType << std::endl;
     error( errorType, specificErrorType );
   }
 }
@@ -10258,7 +10258,7 @@ void RtApi :: error( RtAudioError::Type type, RtAudioError::Type specificErrorTy
       stream_.callbackInfo.isRunning = false; // exit from the thread
       abortStream();
     }
-    std::cout << "Calling call back" << std::endl;
+    std::cout << "RtApi :: error: Calling call back" << std::endl;
     errorCallback( specificErrorTypeForCallBack, errorMessage, stream_.callbackInfo.userData );
     firstErrorOccurred_ = false;
     return;
