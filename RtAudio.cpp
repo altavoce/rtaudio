@@ -5506,6 +5506,7 @@ Exit:
   if ( !errorText.empty() )
   {
     errorText_ = errorText;
+    std::cout << errorText_ << std::endl;
     error( errorType );
   }
 }
