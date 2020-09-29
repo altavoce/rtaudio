@@ -4991,6 +4991,7 @@ void RtApiWasapi::wasapiThread()
 
   std::string errorText;
   RtAudioError::Type errorType = RtAudioError::DRIVER_ERROR;
+  RtAudioError::Type specificErrorType = RtAudioError::WARNING;
 
   // Attempt to assign "Pro Audio" characteristic to thread
   HMODULE AvrtDll = LoadLibrary( (LPCTSTR) "AVRT.dll" );
@@ -5158,6 +5159,7 @@ void RtApiWasapi::wasapiThread()
     hr = renderAudioClient->GetBufferSize( &outBufferSize );
     if ( FAILED( hr ) ) {
       errorText = "RtApiWasapi::wasapiThread: Unable to get render buffer size.";
+      specificErrorType = RtAudioError::NO_DEVICES_FOUND;
       goto Exit;
     }
 
@@ -5195,6 +5197,7 @@ void RtApiWasapi::wasapiThread()
   if ( !convBuffer || !stream_.deviceBuffer ) {
     errorType = RtAudioError::MEMORY_ERROR;
     errorText = "RtApiWasapi::wasapiThread: Error allocating device buffer memory.";
+    specificErrorType = RtAudioError::MEMORY_ERROR;
     goto Exit;
   }
 
@@ -5374,6 +5377,7 @@ void RtApiWasapi::wasapiThread()
                                      &captureFlags, NULL, NULL );
       if ( FAILED( hr ) ) {
         errorText = "RtApiWasapi::wasapiThread: Unable to retrieve capture buffer.";
+        specificErrorType = RtAudioError::NO_DEVICES_FOUND;
         goto Exit;
       }
 
@@ -5428,12 +5432,14 @@ void RtApiWasapi::wasapiThread()
       hr = renderAudioClient->GetBufferSize( &bufferFrameCount );
       if ( FAILED( hr ) ) {
         errorText = "RtApiWasapi::wasapiThread: Unable to retrieve render buffer size.";
+        specificErrorType = RtAudioError::NO_DEVICES_FOUND;
         goto Exit;
       }
 
       hr = renderAudioClient->GetCurrentPadding( &numFramesPadding );
       if ( FAILED( hr ) ) {
         errorText = "RtApiWasapi::wasapiThread: Unable to retrieve render buffer padding.";
+        specificErrorType = RtAudioError::NO_DEVICES_FOUND;
         goto Exit;
       }
 
@@ -5443,6 +5449,7 @@ void RtApiWasapi::wasapiThread()
         hr = renderClient->GetBuffer( bufferFrameCount, &streamBuffer );
         if ( FAILED( hr ) ) {
           errorText = "RtApiWasapi::wasapiThread: Unable to retrieve render buffer.";
+          specificErrorType = RtAudioError::NO_DEVICES_FOUND;
           goto Exit;
         }
 
@@ -5507,7 +5514,7 @@ Exit:
   {
     errorText_ = errorText;
     std::cout << errorText_ << std::endl;
-    error( errorType );
+    error( errorType, specificErrorType );
   }
 }
 
