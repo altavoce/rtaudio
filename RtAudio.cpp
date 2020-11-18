@@ -5368,7 +5368,11 @@ void RtApiWasapi::wasapiThread()
     if ( captureAudioClient ) {
       // if the callback input buffer was not pulled from captureBuffer, wait for next capture event
       if ( !callbackPulled ) {
-        WaitForSingleObject( loopbackEnabled ? renderEvent : captureEvent, INFINITE );
+        DWORD hr = WaitForSingleObject( loopbackEnabled ? renderEvent : captureEvent, 1000 );    // hyp: frame size is not >1s
+        if(hr==WAIT_TIMEOUT){
+            errorText = "RtApiWasapi::wasapiThread: WaitForSingleObject timed out.";
+            goto Exit;
+        }
       }
 
       // Get capture buffer from stream
@@ -5425,7 +5429,11 @@ void RtApiWasapi::wasapiThread()
     if ( renderAudioClient ) {
       // if the callback output buffer was not pushed to renderBuffer, wait for next render event
       if ( callbackPulled && !callbackPushed ) {
-        WaitForSingleObject( renderEvent, INFINITE );
+        DWORD hr = WaitForSingleObject( renderEvent, 1000 ); // hyp: frame size is not >1s
+        if(hr==WAIT_TIMEOUT){
+            errorText = "RtApiWasapi::wasapiThread: WaitForSingleObject timed out.";
+            goto Exit;
+        }
       }
 
       // Get render buffer from stream
